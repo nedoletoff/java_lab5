@@ -1,4 +1,4 @@
-public class SquareMatrix extends Matrix {
+public class SquareMatrix extends Matrix implements IMatrix<SquareMatrix> {
     final int size;
 
    public SquareMatrix(int size) throws MyException {

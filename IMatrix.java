@@ -1,5 +1,5 @@
 import java.lang.StringBuilder;
-interface IMatrix<T> {
+interface IMatrix<T extends Matrix> {
     void setElement(int row, int column, int value);
     int getElement(int row, int column);
     int getRowsNum();
@@ -16,6 +16,7 @@ interface IMatrix<T> {
 
         return result;
     }
+
     default T product(T other) throws MyException {
         if (this.getColumnsNum() != other.getRowsNum())
             throw new MyException("matrix cannot be product");
@@ -32,6 +33,7 @@ interface IMatrix<T> {
         return result;
     }
 
+    @Override
     default String toString() {
         StringBuilder builder = new StringBuilder();
 
@@ -46,7 +48,7 @@ interface IMatrix<T> {
         return builder.toString();
     }
 
-        
+    @Override  
     default boolean equals(Object other) {
         if (!(other instanceof T)) {
             return false;
