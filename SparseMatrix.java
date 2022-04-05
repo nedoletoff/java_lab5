@@ -75,7 +75,6 @@ public class SparseMatrix extends Matrix implements IMatrix {
     public int getElement(int row, int column) throws MyException {
         ListIterator<Rows> itRows = this.matrix.listIterator();
         boolean rowCheck = false;
-        boolean columnCheck = false;
 
         while (itRows.hasNext() && itRows.next().rowIndex <= row) {
             itRows.previous();
@@ -84,20 +83,16 @@ public class SparseMatrix extends Matrix implements IMatrix {
         }
         if (rowCheck) {
             itRows.previous();
-            ListIterator<Element> itElement = itRows.next().row.listIterator();
+            ListIterator<Rows.Element> itElement = itRows.next().row.listIterator();
             while(itElement.hasNext() && itElement.next().columnIndex <= column) {
                 itElement.previous();
                 if (itElement.next().columnIndex == column) {
-                    columnCheck = true;
-                    itELement.previous();
-                    break;
+                    itElement.previous();
+                    return itElement.next().value;
                 }
             }
         }
-        if (rowCheck && columnCheck)
-            return itElement.next().value;
-        else 
-            return 0;
+        return 0;
     }
 
     public IMatrix sum(IMatrix other) throws MyException {
@@ -132,7 +127,6 @@ public class SparseMatrix extends Matrix implements IMatrix {
     private void addElement(int row, int column, int value) {
         ListIterator<Rows> itRows = this.matrix.listIterator();
         boolean rowCheck = false;
-        boolean columnCheck = false;
 
         while(itRows.hasNext() && itRows.next().rowIndex <= row) {
             itRows.previous();
@@ -143,20 +137,17 @@ public class SparseMatrix extends Matrix implements IMatrix {
         }
         if (rowCheck) {
             itRows.previous();
-            ListIterator<Element> itElement = itRows.next().row.listIterator();
-            while(itElelment.hasNext() && itElement.next().columnIndex <= column) {
+            ListIterator<Rows.Element> itElement = itRows.next().row.listIterator();
+            while(itElement.hasNext() && itElement.next().columnIndex <= column) {
                 itElement.previous();
-                if (itElelment.next().columnIndex == column) {
-                    itElelment.previous();
-                    columnCheck = true;
+                if (itElement.next().columnIndex == column) {
+                    itElement.previous();
+                    itElement.next().value = value;
                     break;
                 }
             }
         }
-        if (columnCheck) {
-            itElement.next().value = value;
-        }
-        else if (rowCheck && itElement.hasPrev()) {
+        if (rowCheck && itElement.hasPrev()) {
             itElement.previous();
             itElement.add(new Element(column, value));
         }
