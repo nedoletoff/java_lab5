@@ -2,7 +2,7 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Random random = new Random();
-        int matrixSize = 10;
+        int matrixSize = 5;
         IMatrix aSparse = new SparseMatrix(matrixSize, matrixSize);
         IMatrix bSparse = new SparseMatrix(matrixSize, matrixSize);
         for (int i = 0; i < matrixSize; i++) {
