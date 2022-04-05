@@ -113,8 +113,8 @@ public class SparseMatrix extends Matrix implements IMatrix {
             throw new MyException("matrix cannot be product");
         IMatrix result = new SparseMatrix(this.getRowsNum(), other.getColumnsNum());
 
-        for(int m = 0; m<result.getRowsNum();m++)
-            for(int k = 0; k<result.getColumnsNum();k++)
+        for(int m = 0; m < result.getRowsNum();m++)
+            for(int k = 0; k < result.getColumnsNum();k++)
             {
                 result.setElement(m, k, 0);
                 for (int n = 0; n < result.getRowsNum(); n++)
@@ -143,17 +143,16 @@ public class SparseMatrix extends Matrix implements IMatrix {
                 if (itElement.next().columnIndex == column) {
                     itElement.previous();
                     itElement.next().value = value;
-                    break;
+                    return;
                 }
             }
+            if ()
+            itElement.add(new Rows.Element(column, value));
+            return;
         }
-        if (rowCheck && itElement.hasPrev()) {
-            itElement.previous();
-            itElement.add(new Element(column, value));
-        }
-        else if (rowCheck) {
+        if (rowCheck) {
             itRows.previous();
-            itRows.next().rows.addLast(new Rows.Element(column, value));
+            itRows.next().row.addLast(new Rows.Element(column, value));
         }
         else if (this.matrix.size() == 0) {
             matrix.addLast(new Rows(row, column, value));
