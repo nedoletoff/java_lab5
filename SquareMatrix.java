@@ -1,4 +1,4 @@
-public class SquareMatrix extends Matrix implements IMatrix<SquareMatrix> {
+public class SquareMatrix extends UsualMatrix implements IMatrix {
     final int size;
 
    public SquareMatrix(int size) throws MyException {
@@ -12,7 +12,7 @@ public class SquareMatrix extends Matrix implements IMatrix<SquareMatrix> {
        super(other);
        this.size = other.size;
    }
-
+    
    public int getSize() {
        return this.size;
    }

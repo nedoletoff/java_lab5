@@ -1,17 +1,16 @@
-public abstract class Matrix {
-    protected int rowsNum;
-    protected int columnsNum;
+import java.lang.StringBuilder;
+public abstract class Matrix implements IMatrix {
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
 
-    public abstract void setElement(int row, int column, int value);
-
-    public abstract int getElement(int row, int column);
-
-    public int getRowsNum() {
-        return this.rowsNum;
-    }
-
-    public int getColumnsNum() {
-        return this.columnsNum;
+        for (int i = 0; i < this.getRowsNum(); i++) {
+            for (int j = 0; j < this.getColumnsNum(); j++) {
+                builder.append(this.getElement(i, j));
+                builder.append(" ");
+            }
+            builder.append("\n");
+        }
+        return builder.toString();
     }
 }
 
