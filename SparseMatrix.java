@@ -125,6 +125,10 @@ public class SparseMatrix extends Matrix implements IMatrix {
     }
 
     private void addElement(int row, int column, int value) {
+        if (this.matrix.size() == 0) {
+            matrix.addLast(new Rows(row, column, value));
+            return;
+        }
         ListIterator<Rows> itRows = this.matrix.listIterator();
         boolean rowCheck = false;
 
@@ -135,8 +139,8 @@ public class SparseMatrix extends Matrix implements IMatrix {
                 break;
             }
         }
+        itRows.previous();
         if (rowCheck) {
-            itRows.previous();
             ListIterator<Rows.Element> itElement = itRows.next().row.listIterator();
             while(itElement.hasNext() && itElement.next().columnIndex <= column) {
                 itElement.previous();
@@ -146,20 +150,10 @@ public class SparseMatrix extends Matrix implements IMatrix {
                     return;
                 }
             }
-            if ()
             itElement.add(new Rows.Element(column, value));
-            return;
-        }
-        if (rowCheck) {
-            itRows.previous();
-            itRows.next().row.addLast(new Rows.Element(column, value));
-        }
-        else if (this.matrix.size() == 0) {
-            matrix.addLast(new Rows(row, column, value));
         }
         else {
-            itRows.previous();
-            itRows.add(new Rows.Element(column, value));
+            itRows.add(new Rows(row, column, value));
         }
     }
 

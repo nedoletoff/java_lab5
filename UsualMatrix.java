@@ -13,9 +13,9 @@ public class UsualMatrix extends Matrix implements IMatrix {
         this.matrix = new int[rowsNum][columnsNum];
     }
 
-    public UsualMatrix(UsualMatrix other) {
-        this.rowsNum = other.rowsNum;
-        this.columnsNum = other.columnsNum;
+    public UsualMatrix(IMatrix other) {
+        this.rowsNum = other.getRowsNum();
+        this.columnsNum = other.getColumnsNum();
         this.matrix = new int[rowsNum][columnsNum];
         for (int i = 0; i < rowsNum; i++)
             for (int j = 0; j < columnsNum; j++)
