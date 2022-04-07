@@ -4,9 +4,9 @@ public class SparseMatrix extends Matrix implements IMatrix {
     protected int rowsNum;
     protected int columnsNum;
 
-    public static class Rows {
+    static class Row {
         int rowIndex;
-        public static class Element {
+        static class Element {
             int columnIndex;
             int value;
 
@@ -14,22 +14,47 @@ public class SparseMatrix extends Matrix implements IMatrix {
                 this.columnIndex = columnIndex;
                 this.value = value;
             }
+
+            public String toString() {
+                return "column[" + columnIndex + "] = " + value;
+            }
         }
         LinkedList<Element> row;
 
-        Rows(int rowIndex, LinkedList<Element> row) {
-            this.rowIndex = rowIndex;
-            this.row = new LinkedList<Element>();
-        }
-        Rows(int rowIndex, int columnIndex, int value) {
+        Row(int rowIndex, int columnIndex, int value) {
             this.rowIndex = rowIndex;
             Element el = new Element(columnIndex, value);
             this.row = new LinkedList<Element>();
-            this.row.addLast(el);
+            this.row.addFirst(el);
+        }
+
+        public void addElement(int column, int value) {
+            if (this.row.size() == 0) {
+                this.row.addFirst(new Element(column, value));
+                return;
+            }
+
+            ListIterator<Row.Element> itRow = this.row.listIterator();
+            while(itRow.hasNext() && itRow.next().columnIndex <= column) {
+                itRow.previous();
+                if (itRow.next().columnIndex == column) {
+                    itRow.previous();
+                    itRow.next().value = value;
+                    return;
+                }
+            }
+            itRow.add(new Element(column, value));
+        }
+
+        public String toString() {
+            StringBuilder builder = new StringBuilder();
+            builder.append("row[").append(rowIndex).append("] : ");
+            for (Element element : row) builder.append(element).append(", ");
+            return builder.toString();
         }
     }
 
-    protected LinkedList<Rows> matrix;
+    protected LinkedList<Row> matrix;
 
     public SparseMatrix(int rowsNum, int columnsNum) throws MyException {
         if (rowsNum <= 0)
@@ -39,13 +64,20 @@ public class SparseMatrix extends Matrix implements IMatrix {
 
         this.rowsNum = rowsNum;
         this.columnsNum = columnsNum;
-        this.matrix = new LinkedList<Rows>();
+        this.matrix = new LinkedList<Row>();
     }
 
     public SparseMatrix(SparseMatrix other) {
         this.rowsNum = other.rowsNum;
         this.columnsNum = other.columnsNum;
-        this.matrix = new LinkedList<Rows>(other.matrix);
+        this.matrix = new LinkedList<Row>(other.matrix);
+    }
+
+    public SparseMatrix(IMatrix other) {
+        this(other.getRowsNum(), other.getColumnsNum());
+        for (int i = 0; i < rowsNum; i++)
+            for (int j = 0; j < columnsNum; j++)
+                this.setElement(i, j, other.getElement(i, j));
     }
 
     public int getRowsNum() {
@@ -73,22 +105,22 @@ public class SparseMatrix extends Matrix implements IMatrix {
     }
 
     public int getElement(int row, int column) throws MyException {
-        ListIterator<Rows> itRows = this.matrix.listIterator();
+        ListIterator<Row> itMatrix = this.matrix.listIterator();
         boolean rowCheck = false;
 
-        while (itRows.hasNext() && itRows.next().rowIndex <= row) {
-            itRows.previous();
-            if (itRows.next().rowIndex == row)
+        while (itMatrix.hasNext() && itMatrix.next().rowIndex <= row) {
+            itMatrix.previous();
+            if (itMatrix.next().rowIndex == row)
                 rowCheck = true;
         }
         if (rowCheck) {
-            itRows.previous();
-            ListIterator<Rows.Element> itElement = itRows.next().row.listIterator();
-            while(itElement.hasNext() && itElement.next().columnIndex <= column) {
-                itElement.previous();
-                if (itElement.next().columnIndex == column) {
-                    itElement.previous();
-                    return itElement.next().value;
+            itMatrix.previous();
+            ListIterator<Row.Element> itRow = itMatrix.next().row.listIterator();
+            while(itRow.hasNext() && itRow.next().columnIndex <= column) {
+                itRow.previous();
+                if (itRow.next().columnIndex == column) {
+                    itRow.previous();
+                    return itRow.next().value;
                 }
             }
         }
@@ -126,60 +158,57 @@ public class SparseMatrix extends Matrix implements IMatrix {
 
     private void addElement(int row, int column, int value) {
         if (this.matrix.size() == 0) {
-            matrix.addLast(new Rows(row, column, value));
+            matrix.addFirst(new Row(row, column, value));
             return;
         }
-        ListIterator<Rows> itRows = this.matrix.listIterator();
+        ListIterator<Row> itMatrix = this.matrix.listIterator();
         boolean rowCheck = false;
 
-        while(itRows.hasNext() && itRows.next().rowIndex <= row) {
-            itRows.previous();
-            if (itRows.next().rowIndex == row) {
+        while(itMatrix.hasNext() && itMatrix.next().rowIndex <= row) {
+            itMatrix.previous();
+            if (itMatrix.next().rowIndex == row) {
                 rowCheck = true;
                 break;
             }
         }
-        itRows.previous();
+        itMatrix.previous();
         if (rowCheck) {
-            ListIterator<Rows.Element> itElement = itRows.next().row.listIterator();
-            while(itElement.hasNext() && itElement.next().columnIndex <= column) {
-                itElement.previous();
-                if (itElement.next().columnIndex == column) {
-                    itElement.previous();
-                    itElement.next().value = value;
-                    return;
-                }
-            }
-            itElement.add(new Rows.Element(column, value));
+            itMatrix.next().addElement(column, value);
         }
         else {
-            itRows.add(new Rows(row, column, value));
+            itMatrix.add(new Row(row, column, value));
         }
     }
 
     private void removeElement(int row, int column) {
-        ListIterator<Rows> itRows = this.matrix.listIterator();
+        ListIterator<Row> itMatrix = this.matrix.listIterator();
         boolean rowCheck = false;
 
-        while(itRows.hasNext() && itRows.next().rowIndex <= row) {
-            itRows.previous();
-            if (itRows.next().rowIndex == row) {
+        while(itMatrix.hasNext() && itMatrix.next().rowIndex <= row) {
+            itMatrix.previous();
+            if (itMatrix.next().rowIndex == row) {
                 rowCheck = true;
                 break;
             }
         }
         if (rowCheck) {
-            itRows.previous();
-            ListIterator<Rows.Element> itElement = itRows.next().row.listIterator();
-            while(itElement.hasNext() && itElement.next().columnIndex <= column) {
-                itElement.previous();
-                if (itElement.next().columnIndex == column) {
-                    itElement.previous();
-                    itElement.remove();
+            itMatrix.previous();
+            ListIterator<Row.Element> itRow = itMatrix.next().row.listIterator();
+            while(itRow.hasNext() && itRow.next().columnIndex <= column) {
+                itRow.previous();
+                if (itRow.next().columnIndex == column) {
+                    itRow.previous();
+                    itRow.remove();
                     break;
                 }
             }
         }
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Row row : matrix) builder.append(row).append("\n");
+        return builder.toString();
     }
 }
 

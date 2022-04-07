@@ -4,6 +4,25 @@ public class Main {
         Random random = new Random();
         int matrixSize = 5;
         IMatrix aSparse = new SparseMatrix(matrixSize, matrixSize);
+        System.out.println(aSparse);
+        aSparse.setElement(0, 0, 10);
+        System.out.println(aSparse);
+        aSparse.setElement(0, 0, 0);
+        System.out.println(aSparse);
+        aSparse.setElement(0, 4, 2000);
+        aSparse.setElement(0, 3, 200);
+        aSparse.setElement(0, 2, 20);
+        aSparse.setElement(0, 1, 2);
+        aSparse.setElement(0, 0, -2);
+        System.out.println(aSparse);
+        aSparse.setElement(1, 3, 9);
+        aSparse.setElement(3, 1, 5);
+        aSparse.setElement(2, 2, 7);
+        aSparse.setElement(2, 1, 11);
+        aSparse.setElement(2, 3, 13);
+        aSparse.setElement(4, 0, 3);
+        System.out.println(aSparse);
+        /*
         IMatrix bSparse = new SparseMatrix(matrixSize, matrixSize);
         for (int i = 0; i < matrixSize; i++) {
             aSparse.setElement(random.nextInt(matrixSize),
@@ -26,6 +45,8 @@ public class Main {
 
         System.out.println(resultSparse);
         System.out.println(resultUsual);
+         */
+
     }
 }
 
