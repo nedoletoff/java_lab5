@@ -29,11 +29,6 @@ public class SparseMatrix extends Matrix implements IMatrix {
         }
 
         public void addElement(int column, int value) {
-            if (this.row.size() == 0) {
-                this.row.addFirst(new Element(column, value));
-                return;
-            }
-
             ListIterator<Row.Element> itRow = this.row.listIterator();
             while(itRow.hasNext() && itRow.next().columnIndex <= column) {
                 itRow.previous();
@@ -43,7 +38,19 @@ public class SparseMatrix extends Matrix implements IMatrix {
                     return;
                 }
             }
-            itRow.add(new Element(column, value));
+            if (this.row.size() != 0) {
+                if (itRow.hasNext())
+                    itRow.previous();
+                else {
+                    itRow.previous();
+                    if (itRow.next().columnIndex > column)
+                        itRow.previous();
+                }
+                itRow.add(new Element(column, value));
+            }
+            else {
+                this.row.addFirst(new Element(column, value));
+            }
         }
 
         public String toString() {
@@ -110,11 +117,13 @@ public class SparseMatrix extends Matrix implements IMatrix {
 
         while (itMatrix.hasNext() && itMatrix.next().rowIndex <= row) {
             itMatrix.previous();
-            if (itMatrix.next().rowIndex == row)
+            if (itMatrix.next().rowIndex == row) {
                 rowCheck = true;
+                itMatrix.previous();
+                break;
+            }
         }
         if (rowCheck) {
-            itMatrix.previous();
             ListIterator<Row.Element> itRow = itMatrix.next().row.listIterator();
             while(itRow.hasNext() && itRow.next().columnIndex <= column) {
                 itRow.previous();
@@ -157,26 +166,32 @@ public class SparseMatrix extends Matrix implements IMatrix {
     }
 
     private void addElement(int row, int column, int value) {
-        if (this.matrix.size() == 0) {
-            matrix.addFirst(new Row(row, column, value));
-            return;
-        }
         ListIterator<Row> itMatrix = this.matrix.listIterator();
         boolean rowCheck = false;
 
-        while(itMatrix.hasNext() && itMatrix.next().rowIndex <= row) {
+        while (itMatrix.hasNext() && itMatrix.next().rowIndex <= row) {
             itMatrix.previous();
             if (itMatrix.next().rowIndex == row) {
                 rowCheck = true;
                 break;
             }
         }
-        itMatrix.previous();
-        if (rowCheck) {
-            itMatrix.next().addElement(column, value);
+        if (this.matrix.size() != 0) {
+            if (rowCheck) {
+                itMatrix.previous();
+                itMatrix.next().addElement(column, value);
+                return;
+            } else if (itMatrix.hasNext())
+                itMatrix.previous();
+            else {
+                itMatrix.previous();
+                if (itMatrix.next().rowIndex > row)
+                    itMatrix.previous();
+            }
+            itMatrix.add(new Row(row, column, value));
         }
         else {
-            itMatrix.add(new Row(row, column, value));
+            matrix.addFirst(new Row(row, column, value));
         }
     }
 
