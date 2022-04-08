@@ -6,6 +6,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
 
     static class Row {
         int rowIndex;
+
         static class Element {
             int columnIndex;
             int value;
@@ -19,6 +20,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
                 return "column[" + columnIndex + "] = " + value;
             }
         }
+
         LinkedList<Element> row;
 
         Row(int rowIndex, int columnIndex, int value) {
@@ -30,7 +32,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
 
         public void addElement(int column, int value) {
             ListIterator<Row.Element> itRow = this.row.listIterator();
-            while(itRow.hasNext() && itRow.next().columnIndex <= column) {
+            while (itRow.hasNext() && itRow.next().columnIndex <= column) {
                 itRow.previous();
                 if (itRow.next().columnIndex == column) {
                     itRow.previous();
@@ -47,8 +49,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
                         itRow.previous();
                 }
                 itRow.add(new Element(column, value));
-            }
-            else {
+            } else {
                 this.row.addFirst(new Element(column, value));
             }
         }
@@ -125,7 +126,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
         }
         if (rowCheck) {
             ListIterator<Row.Element> itRow = itMatrix.next().row.listIterator();
-            while(itRow.hasNext() && itRow.next().columnIndex <= column) {
+            while (itRow.hasNext() && itRow.next().columnIndex <= column) {
                 itRow.previous();
                 if (itRow.next().columnIndex == column) {
                     itRow.previous();
@@ -150,19 +151,24 @@ public class SparseMatrix extends Matrix implements IMatrix {
     }
 
     public IMatrix product(IMatrix other) throws MyException {
-        if(this.getColumnsNum() !=other.getRowsNum())
+        if (this.getColumnsNum() != other.getRowsNum())
             throw new MyException("matrix cannot be product");
         IMatrix result = new SparseMatrix(this.getRowsNum(), other.getColumnsNum());
 
-        for(int m = 0; m < result.getRowsNum();m++)
-            for(int k = 0; k < result.getColumnsNum();k++)
-            {
+        for (int m = 0; m < result.getRowsNum(); m++)
+            for (int k = 0; k < result.getColumnsNum(); k++) {
                 result.setElement(m, k, 0);
                 for (int n = 0; n < result.getRowsNum(); n++)
                     result.setElement(m, k, result.getElement(m, k) +
                             this.getElement(m, n) * other.getElement(n, k));
             }
         return result;
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (Row row : matrix) builder.append(row).append("\n");
+        return builder.toString();
     }
 
     private void addElement(int row, int column, int value) {
@@ -189,8 +195,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
                     itMatrix.previous();
             }
             itMatrix.add(new Row(row, column, value));
-        }
-        else {
+        } else {
             matrix.addFirst(new Row(row, column, value));
         }
     }
@@ -199,7 +204,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
         ListIterator<Row> itMatrix = this.matrix.listIterator();
         boolean rowCheck = false;
 
-        while(itMatrix.hasNext() && itMatrix.next().rowIndex <= row) {
+        while (itMatrix.hasNext() && itMatrix.next().rowIndex <= row) {
             itMatrix.previous();
             if (itMatrix.next().rowIndex == row) {
                 rowCheck = true;
@@ -209,7 +214,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
         if (rowCheck) {
             itMatrix.previous();
             ListIterator<Row.Element> itRow = itMatrix.next().row.listIterator();
-            while(itRow.hasNext() && itRow.next().columnIndex <= column) {
+            while (itRow.hasNext() && itRow.next().columnIndex <= column) {
                 itRow.previous();
                 if (itRow.next().columnIndex == column) {
                     itRow.previous();
@@ -218,12 +223,6 @@ public class SparseMatrix extends Matrix implements IMatrix {
                 }
             }
         }
-    }
-
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        for (Row row : matrix) builder.append(row).append("\n");
-        return builder.toString();
     }
 }
 
