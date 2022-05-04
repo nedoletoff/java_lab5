@@ -21,13 +21,13 @@ public class SparseMatrix extends Matrix implements IMatrix {
             }
         }
 
-        LinkedList<Element> row;
+        ArrayList<Element> row;
 
         Row(int rowIndex, int columnIndex, int value) {
             this.rowIndex = rowIndex;
             Element el = new Element(columnIndex, value);
-            this.row = new LinkedList<Element>();
-            this.row.addFirst(el);
+            this.row = new ArrayList<Element>();
+            this.row.add(el);
         }
 
         public void addElement(int column, int value) {
@@ -50,7 +50,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
                 }
                 itRow.add(new Element(column, value));
             } else {
-                this.row.addFirst(new Element(column, value));
+                this.row.add(new Element(column, value));
             }
         }
 
@@ -62,7 +62,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
         }
     }
 
-    protected LinkedList<Row> matrix;
+    protected ArrayList<Row> matrix;
 
     public SparseMatrix(int rowsNum, int columnsNum) throws MyException {
         if (rowsNum <= 0)
@@ -72,13 +72,13 @@ public class SparseMatrix extends Matrix implements IMatrix {
 
         this.rowsNum = rowsNum;
         this.columnsNum = columnsNum;
-        this.matrix = new LinkedList<Row>();
+        this.matrix = new ArrayList<Row>();
     }
 
     public SparseMatrix(SparseMatrix other) {
         this.rowsNum = other.rowsNum;
         this.columnsNum = other.columnsNum;
-        this.matrix = new LinkedList<Row>(other.matrix);
+        this.matrix = new ArrayList<Row>(other.matrix);
     }
 
     public SparseMatrix(IMatrix other) {
@@ -196,7 +196,7 @@ public class SparseMatrix extends Matrix implements IMatrix {
             }
             itMatrix.add(new Row(row, column, value));
         } else {
-            matrix.addFirst(new Row(row, column, value));
+            matrix.add(new Row(row, column, value));
         }
     }
 
